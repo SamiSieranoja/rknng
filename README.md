@@ -39,13 +39,14 @@ rknng [--help] [--delta=<STOP>] [--distpar=<FLOAT>] [-k <n>] [--seed=<n>] [--typ
 
 # Input Data formats
 
-lshkit (input data, numerical):
+# lshkit (input data, numerical):
 
 From http://lshkit.sourceforge.net/dc/d46/matrix_8h.html :
 "In the beginning of the file are three 32-bit unsigned integers: ELEM-SIZE, SIZE, DIM. ELEM-SIZE is the size of the element, and currently the only valid value is 4, which is the size of float. SIZE is the number of vectors in the file and DIM is the dimension. The rest of the file is SIZE vectors stored consecutively, and the total size is SIZE * DIM * 4 bytes."
 
-ascii (input data, numerical): Float values separated by spaces, vectors separated by lines.
-Example:
+# ascii (input data, numerical): 
+Float values separated by spaces, vectors separated by lines.   
+Example:  
 1   1.7450209e-01   1.3405977e-01   2.2567669e-01  1.4958786e-01
 2.4396723e-02   3.8201822e-01   2.8091144e-01   8.7233654e-02   1.6419012e-01
 
@@ -53,21 +54,21 @@ Example:
 # Output Data formats
 
 ## txt (graph format):
-Header (first line): number of nodes.
-Other lines: One line for each item in dataset. Line format:
+Header (first line): number of nodes.  
+Other lines: One line for each item in dataset. Line format:  
  - First number: id of node (in range 0..(N-1))
  - Second number: K = Number of neighbors
  - Next K values: the id:s of the K neighbors
  - Next K values: the distances to the K neighbors
 
-Example:
-5000
-0 5 24 99 483 11 444 1414008.500000 1238420.750000 0.000000 0.000000 0.000000
-...
-N=5000. First node id = 0, K = 5, neighbors = [24 99 483 11 444], distances = [1414008.500000 1238420.750000 .... ]
+Example:  
+5000  
+0 5 24 99 483 11 444 1414008.500000 1238420.750000 0.000000 0.000000 0.000000  
+...  
+N=5000. First node id = 0, K = 5, neighbors = [24 99 483 11 444], distances = [1414008.500000 1238420.750000 .... ]   
 
 ## wgraph (graph format for text data only):
-Each string and its neighbours in one line. Distance in brackets. Example:
+Each string and its neighbours in one line. Distance in brackets. Example:  
 neighbor: neighboor(1.0000), neighbour(1.0000), neibor(2.0000), neigbour(2.0000), neighbours(2.0000), neibour(3.0000), neither(3.0000)
 
 # Run examples:
