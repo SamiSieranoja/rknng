@@ -91,6 +91,7 @@ Run RPDIV algorithm for vectorial data/g2-256-50.txt (N=2048,D=256) dataset:
 
 # References
 
-[1] S. Sieranoja and P. Fränti. Fast random pair divisive construction of kNN graph using generic distance measures. In Proceedings of the 2018 International Conference on Big Data and Computing, ACM, 2018.
-[2] W. Dong, C. Moses, and K. Li. Efficient k-nearest neighbor graph construction for generic similarity measures. In Proceedings of the 20th international conference on World wide web, page 577–586. ACM, 2011.
+ [1] S. Sieranoja and P. Fränti. Fast random pair divisive construction of kNN graph using generic distance measures. In Proceedings of the 2018 International Conference on Big Data and Computing, ACM, 2018.
+ 
+ [2] W. Dong, C. Moses, and K. Li. Efficient k-nearest neighbor graph construction for generic similarity measures. In Proceedings of the 20th international conference on World wide web, page 577–586. ACM, 2011.
 
