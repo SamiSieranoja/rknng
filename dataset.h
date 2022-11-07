@@ -271,7 +271,7 @@ DataSet *read_ascii_dataset(const char *fname) {
   }
   pbuf = line;
   for (i_elem = 0;; i_elem++) {
-    if (*pbuf == '\n')
+    if (*pbuf == '\n' || *pbuf == '\r')
       break;
     buf = strtof(pbuf, &pbuf);
     printf(" %f", buf);
@@ -306,9 +306,9 @@ DataSet *read_ascii_dataset(const char *fname) {
     pbuf = line;
 
     for (i_elem = 0;; i_elem++) {
-      if (*pbuf == '\n' && i_elem == dim) {
+      if ((*pbuf == '\n' || *pbuf == '\r') && i_elem == dim) {
         break;
-      } else if (*pbuf == '\n') {
+      } else if (*pbuf == '\n' || *pbuf == '\r') {
         terminal_error("Got too few elements");
       }
       buf = strtof(pbuf, &pbuf);

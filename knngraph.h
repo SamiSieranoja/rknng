@@ -246,7 +246,7 @@ int write_kNN_txt(const char * fname, kNNGraph * kNN) {
     int K = 0;
     K = kNN->k;
 
-    fprintf(fp,"%d\n",kNN->size);
+    // fprintf(fp,"%d\n",kNN->size); //TODO: set as parameter if write header or not
     for(int data_i = 0; data_i < kNN->size; data_i++) {
 
         fprintf(fp,"%u",kNN->list[data_i].id);

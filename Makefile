@@ -36,8 +36,8 @@ clean:
 
 #	g++ -O3 -c -std=c++11 -fPIC -o rknng_lib.o rknng_lib.cpp
 apitest:
-	$(GPP) -O3 -c -std=c++11 -o rknng_lib.o rknng_lib.cpp $(LIBS)
+	$(CC) -O3 -c -std=c++11 -o rknng_lib.o rknng_lib.cpp $(LIBS)
 	gcc -c options.c
 	gcc -c apitest.c
-	$(GPP) -o apitest apitest.o rknng_lib.o options.o $(LIBS)
+	$(CC) -o apitest apitest.o rknng_lib.o options.o $(LIBS)
 

@@ -233,7 +233,8 @@ int main(int argc, char *argv[]) {
   if (algo->count > 0 && strcmp(algo->sval[0], "brutef") == 0) {
     printf("Algorithm: Brute force\n");
 
-    kNN = brute_force_search_pthread(DS, K);
+    // kNN = brute_force_search_pthread(DS, K);
+    kNN = brute_force_search(DS, K);
   }
 
   // Construct by RPDIV
@@ -254,6 +255,8 @@ int main(int argc, char *argv[]) {
     }
     // txt format
     else {
+    
+    printf("Writing output graph to file: %s\n", outfn->filename[0]);
       write_kNN_txt(outfn->filename[0], kNN);
     }
   }
