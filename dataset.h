@@ -12,7 +12,6 @@
 extern struct knng_options g_options;
 
 using namespace std;
-
 // TODO:
 #define MEM_ALIGNMENT 32
 struct DataSet {

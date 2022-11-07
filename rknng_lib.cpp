@@ -68,7 +68,8 @@ float knng_dist(kNNGraph *knng, int p1, int p2) {
   return distance(DS, p1, p2);
 }
 
-PyObject *get_knng2(PyArrayObject *py_v) {
+
+PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float delta, int maxiter) {
   int N = py_v->dimensions[1];
   int D = py_v->dimensions[0];
 
@@ -80,11 +81,8 @@ PyObject *get_knng2(PyArrayObject *py_v) {
     }
   }
   
-  int k = 15;
-  int W = 15 * 2;
-  float nndes_start = 0.2;
-  float endcond = 0.05;
-  kNNGraph *knng = rpdiv_create_knng(DS, DS, k, W, endcond, nndes_start, 100);
+  // printf("k=%d,w=%d,delta=%f,nndes=%f,maxiter=%d\n", k,  w,  nndes,  delta,  maxiter);
+  kNNGraph *knng = rpdiv_create_knng(DS, DS, k, w, delta, nndes, maxiter);
 
   // Convert kNN graph to python format
   PyObject *python_val = PyList_New(N);

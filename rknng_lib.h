@@ -41,7 +41,10 @@ extern void printDSVec(kNNGraph* knng,int id);
 //extern kNNGraph* get_knng(const char* infn,int k, int data_type, int algo, float endcond, float nndes_start);
 extern kNNGraph* get_knng(const char* infn,int k, int data_type, int algo, float endcond, float nndes_start, int W, int dfunc); 
 
-extern PyObject* get_knng2(PyArrayObject *aa);
+// extern PyObject* get_knng2(PyArrayObject *aa);
+
+PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float delta, int maxiter); 
+// extern PyObject *__rpdiv_knng(PyArrayObject *py_v, PyObject *py_k, PyObject *py_w, PyObject *py_nndes, PyObject *py_delta, PyObject *py_maxiter); 
 
 extern void test_rknn_lib();
 extern float knng_dist(kNNGraph* knng, int p1, int p2);
