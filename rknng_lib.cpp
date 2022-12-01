@@ -68,29 +68,15 @@ float knng_dist(kNNGraph *knng, int p1, int p2) {
   return distance(DS, p1, p2);
 }
 
-
-PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float delta, int maxiter) {
-  int N = py_v->dimensions[1];
-  int D = py_v->dimensions[0];
-
-  //Convert input from python to C data structure
-  DataSet *DS = init_DataSet(N, D);
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < D; j++) {
-      set_val(DS, i, j, v(i, j));
-    }
-  }
-  
-  // printf("k=%d,w=%d,delta=%f,nndes=%f,maxiter=%d\n", k,  w,  nndes,  delta,  maxiter);
-  kNNGraph *knng = rpdiv_create_knng(DS, DS, k, w, delta, nndes, maxiter);
-
+PyObject *knng2py(kNNGraph *knng) {
   // Convert kNN graph to python format
-  PyObject *python_val = PyList_New(N);
-  for (int i = 0; i < N; ++i) {
+  printf("knng2py size=%d\n",knng->size);
+  PyObject *pyknng = PyList_New(knng->size);
+  for (int i = 0; i < knng->size; i++) {
 
     PyObject *col = PyList_New(2);
-    PyObject *nnlist = PyList_New(k);
-    PyObject *distlist = PyList_New(k);
+    PyObject *nnlist = PyList_New(knng->k);
+    PyObject *distlist = PyList_New(knng->k);
 
     for (int nn_i = 0; nn_i < knng->k; nn_i++) {
       int idx = (int)get_kNN_item_id(knng, i, nn_i);
@@ -100,10 +86,53 @@ PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float del
     }
     PyList_SetItem(col, 0, nnlist);
     PyList_SetItem(col, 1, distlist);
-    PyList_SetItem(python_val, i, col);
+    PyList_SetItem(pyknng, i, col);
+  }
+  return pyknng;
+}
+
+PyObject *__rpdiv_knng_o(PyObject *py_v, int k, int w, float nndes, float delta, int maxiter) {
+
+  printf("Delta0=%f\n", delta);
+  printf("__rpdiv_knng_o\n", k,  w,  nndes,  delta,  maxiter);
+  PyObject *pysize = PyObject_GetAttrString(py_v, "size");
+  DataSet *DS = (DataSet *)safemalloc(sizeof(DataSet));
+  DS->size = PyLong_AsLong(pysize);
+  DS->dimensionality = 0;
+  DS->type = T_CUSTOMDF; 
+  
+  DS->pydf = PyObject_GetAttrString(py_v, "distance");
+
+
+  printf("Delta=%f\n", delta);
+  printf("!! k=%d,w=%d,delta=%f,nndes=%f,maxiter=%d\n", k,  w, delta, nndes,  maxiter);
+  kNNGraph *knng = rpdiv_create_knng(DS, DS, k, w, delta, nndes, maxiter);
+
+  PyObject *pyknng = knng2py(knng);
+  return pyknng;
+}
+
+
+PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float delta, int maxiter) {
+  int N = py_v->dimensions[0];
+  int D = py_v->dimensions[1];
+
+  // Convert input from python to C data structure
+  // printf("N=%d D=%d\n",N,D);
+  DataSet *DS = init_DataSet(N, D);
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < D; j++) {
+      set_val(DS, i, j, v(i, j));
+    }
   }
 
-  return python_val;
+  // printf("k=%d,w=%d,delta=%f,nndes=%f,maxiter=%d\n", k,  w,  nndes,  delta,  maxiter);
+  // printf("k=%d,w=%d,delta=%f,nndes=%f,maxiter=%d\n", k,  w,  nndes,  delta,  maxiter);
+  kNNGraph *knng = rpdiv_create_knng(DS, DS, k, w, delta, nndes, maxiter);
+
+  PyObject *pyknng = knng2py(knng);
+
+  return pyknng;
 }
 
 kNNGraph *get_knng(const char *infn, int k, int data_type, int algo, float endcond,

@@ -41,3 +41,8 @@ apitest:
 	gcc -c apitest.c
 	$(CC) -o apitest apitest.o rknng_lib.o options.o $(LIBS)
 
+python:
+	rm -f lib/*.so
+	rm -f *.so
+	python3 ./setup.py build_ext --inplace
+

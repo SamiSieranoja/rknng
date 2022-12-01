@@ -44,6 +44,8 @@ extern kNNGraph* get_knng(const char* infn,int k, int data_type, int algo, float
 // extern PyObject* get_knng2(PyArrayObject *aa);
 
 PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float delta, int maxiter); 
+PyObject *__rpdiv_knng_o(PyObject *py_v, int k, int w, float nndes, float delta, int maxiter); 
+
 // extern PyObject *__rpdiv_knng(PyArrayObject *py_v, PyObject *py_k, PyObject *py_w, PyObject *py_nndes, PyObject *py_delta, PyObject *py_maxiter); 
 
 extern void test_rknn_lib();

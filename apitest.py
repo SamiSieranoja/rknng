@@ -1,24 +1,33 @@
 #!/usr/bin/python3
 
-import os
-import time
 import numpy as np
+import rpdivknng
 
-import spam
 
-print("LOGIT:")
+
+# Class needs to have following properties:
+# - attribute 'size' that reflects the number of data objects
+# - function distance(a,b) where parameters a,b are integers between 0..(size-1)
+# Name of class is arbitrary
+class DistanceMeasureL2:
+	def __init__(self,x):
+		self.tmp = 1
+		self.x = x
+		self.size = len(x)
+	def distance(self,a,b):
+		dist = 3.3
+		dist = np.linalg.norm(self.x[a]-self.x[b])
+		return dist
+
 x=np.loadtxt('data/g2-256-50.txt')
-# print(x[0])
-#print(spam.logit(0.1))
-# knn = spam.rpdiv_knng(x,20,30)
-# knn = spam.rpdiv_knng(x,20,30,0.2,100,delta=0.02)
-# knn = spam.rpdiv_knng(x,20,30,0.2,100)
+dist = DistanceMeasureL2(x)
+# knn = rpdivknng.rpdiv_knng(x,20,window=30,nndes=0.2,maxiter=100,delta=0.02)
 
-# knn = spam.rpdiv_knng(x,20,window=30,nndes=0.2,maxiter=100,delta=0.02)
-knn = spam.rpdiv_knng(x,20)
+knn = rpdivknng.rpdiv_knng_o(dist,20)
+# knn = rpdivknng.rpdiv_knng(x,20,window=30,nndes=0.2,maxiter=100,delta=0.02)
+# knn = rpdivknng.rpdiv_knng_o(dist,20,delta=0.02,nndes=0.0)
+# print(knn)
 print("KNN:")
-print(knn[0])
-print(knn[1])
-#print(spam.logit([1,2,3]))
-
+# print(knn[0])
+# print(knn[1])
 

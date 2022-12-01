@@ -26,7 +26,15 @@ struct DataSet {
   int **bigrams;
   int **trigrams;
   int type;
+#ifdef Py_PYTHON_H
+  PyObject *pyobj;
+  PyObject *pydf; // Distance function defined in python
+#endif
 };
+
+#define T_NUMERICAL 1
+#define T_STRING 2
+#define T_CUSTOMDF 3
 
 #include "stringdata.h"
 
@@ -35,13 +43,15 @@ DataSet *init_DataSet(int size, int dimensionality) {
   DataSet *DS = (DataSet *)safemalloc(sizeof(DataSet));
   DS->size = size;
   DS->dimensionality = dimensionality;
-  DS->vector_size = DS->dimensionality * sizeof(float);
-  DS->data = (float **)safemalloc(sizeof(float *) * DS->size);
   DS->type = 1; // numerical
-  float **datap = DS->data;
-  for (int i = 0; i < DS->size; i++) {
-    *datap = (float *)safemalloc(sizeof(float) * DS->dimensionality);
-    datap++;
+  if (dimensionality > 0) {
+    DS->vector_size = DS->dimensionality * sizeof(float);
+    DS->data = (float **)safemalloc(sizeof(float *) * DS->size);
+    float **datap = DS->data;
+    for (int i = 0; i < DS->size; i++) {
+      *datap = (float *)safemalloc(sizeof(float) * DS->dimensionality);
+      datap++;
+    }
   }
 
   return DS;
@@ -169,7 +179,7 @@ inline float cosine_dist(float *p1_idx, float *p2_idx, int D) {
 inline float distance(DataSet *P, int p1, int p2) {
   float ret;
 
-  if (P->type == 2) // String data
+  if (P->type == T_STRING) // String data
   {
     if (g_options.distance_type == 10) {
       ret = dice_distance_precalc(P, p1, p2);
@@ -178,7 +188,7 @@ inline float distance(DataSet *P, int p1, int p2) {
       ret = (float)distr;
     }
     return ret;
-  } else { // Numerical data
+  } else if (P->type == T_NUMERICAL) { // Numerical data
 
     float *p1_idx = get_vector(P, p1);
     float *p2_idx = get_vector(P, p2);
@@ -199,6 +209,21 @@ inline float distance(DataSet *P, int p1, int p2) {
     }
 
     return ret;
+  } else if (P->type == T_CUSTOMDF) {
+#ifdef Py_PYTHON_H
+    PyObject *pyp1;
+    PyObject *pyp2;
+    PyObject *result;
+    pyp1 = PyLong_FromLong(p1);
+    pyp2 = PyLong_FromLong(p2);
+    result = PyObject_CallFunctionObjArgs(P->pydf, pyp1, pyp2, NULL);
+    ret = PyFloat_AS_DOUBLE(result);
+    Py_DECREF(pyp1);
+    Py_DECREF(pyp2);
+    Py_DECREF(result);
+
+    return ret;
+#endif
   }
 }
 

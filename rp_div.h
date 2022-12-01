@@ -78,6 +78,7 @@ void rpdiv_recurse(DataSet* data,int* input_arr,int* input_arr2, int input_arr_s
 
 
 kNNGraph* rpdiv_create_knng(DataSet* data, DataSet* DS_proj, int K, int window_width, double delta, double nndesStart, int maxIterations) {
+	g_timer.tick();
     kNNGraph* knng = NULL;
     DataSet* projDS = data;
     knng = init_kNNGraph(data->size,g_options.recall_K,K);
