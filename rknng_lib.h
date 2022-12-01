@@ -36,8 +36,8 @@ typedef struct kNNGraph {
 extern void printDSVec(kNNGraph* knng,int id);
 extern kNNGraph* get_knng(const char* infn,int k, int data_type, int algo, float endcond, float nndes_start, int W, int dfunc); 
 
-PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float delta, int maxiter); 
-PyObject *__rpdiv_knng_generic(PyObject *py_v, int k, int w, float nndes, float delta, int maxiter); 
+PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float delta, int maxiter, int dtype);
+PyObject *__rpdiv_knng_generic(PyObject *py_v, int k, int w, float nndes, float delta, int maxiter);
 
 
 extern void test_rknn_lib();

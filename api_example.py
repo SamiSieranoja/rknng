@@ -3,9 +3,7 @@
 import numpy as np
 import rpdivknng
 
-
-
-# Class needs to have following properties:
+# Class implementing distance measure needs to have following properties:
 # - attribute 'size' that reflects the number of data objects
 # - function distance(a,b) where parameters a,b are integers between 0..(size-1)
 # Name of class is arbitrary
@@ -18,18 +16,17 @@ class DistanceMeasureL2:
 		dist = np.linalg.norm(self.x[a]-self.x[b])
 		return dist
 
-# x=np.loadtxt('data/g2-256-50.txt')
 x=np.loadtxt('data/s2.txt')
 dist = DistanceMeasureL2(x)
-# knn = rpdivknng.rpdiv_knng(x,20,window=30,nndes=0.2,maxiter=100,delta=0.02)
-
 
 # Fast version using built in distance functions written in C:
-knn = rpdivknng.get_knng(x,3)
+neighbors=1
+knn = rpdivknng.get_knng(x,neighbors,distance="l2")
+# distance must be one of {l2(default),l1,cos}
 
 # Slower version using distance function provided by python:
 # (Can work with any kind of distance)
-# knn = rpdivknng.get_knng_generic(dist,3)
+# knn = rpdivknng.get_knng_generic(dist,neighbors)
 
 # For higher quality:
 #  - decrease delta (within [0.0..1.0]) 
@@ -37,14 +34,14 @@ knn = rpdivknng.get_knng(x,3)
 #  - set nndes around 0.2 (higer than delta)
 
 # For example:
-# knn = rpdivknng.get_knng(x,3,window=50,nndes=0.2,maxiter=100,delta=0.001)
+# knn = rpdivknng.get_knng(x,neighbors,window=50,nndes=0.2,maxiter=100,delta=0.001)
 
 #Output format:
 # knn[i][t][j]
 # for t=0: index of j'th neighbor for i'th point
 # for t=1: Distance to j'th neighbor for i'th point
 
-# Draw knn graph:
+print('Start draving knn graph')
 from matplotlib import pyplot as plt
 for y in x:
 	plt.plot(y[0],y[1], marker=".", color="black")

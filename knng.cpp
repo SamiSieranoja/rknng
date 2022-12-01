@@ -212,6 +212,8 @@ int main(int argc, char *argv[]) {
       printf("Distance function: Dice\n", g_options.minkowski_p);
     }
   }
+  
+  DS->distance_type = g_options.distance_type;
 
   if (gtfn->count > 0) {
     printf("Loading ground truth file: %s\n", gtfn->filename[0]);

@@ -107,13 +107,15 @@ PyObject *__rpdiv_knng_generic(PyObject *py_v, int k, int w, float nndes, float 
 
 
 // For vector data
-PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float delta, int maxiter) {
+PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float delta, int maxiter, int dtype) {
   int N = py_v->dimensions[0];
   int D = py_v->dimensions[1];
 
+  g_options.minkowski_p=1.0;
   // Convert input from python to C data structure
   // printf("N=%d D=%d\n",N,D);
   DataSet *DS = init_DataSet(N, D);
+  DS->distance_type = dtype;
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < D; j++) {
       set_val(DS, i, j, v(i, j));
@@ -139,6 +141,8 @@ kNNGraph *get_knng(const char *infn, int k, int data_type, int algo, float endco
     printf("Incorrect data type:%d\n", data_type);
   }
   kNNGraph *knng;
+  
+  DS->distance_type = dfunc;
 
   g_timer.tick();
 

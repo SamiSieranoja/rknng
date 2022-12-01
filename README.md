@@ -6,14 +6,74 @@ The RKNNG software implements the following algorithms for k-nearest neighbor gr
 
 The software is provided with GNU Lesser General Public License, Version 3. https://www.gnu.org/licenses/lgpl.html. All files except those under data and contrib -folders are subject to this license. See LICENSE.txt.
 
-# Compile
+
+# Python interface
+This has not been widely tested yet. Let me know how it works for you if you try it out.
+
+Compile:
+
+```
+  rm lib/*.so
+  rm *.so
+  python3 ./setup.py build_ext --inplace
+```
+
+Copy the .so file (rpdivknng.cpython-38-x86_64-linux-gnu.so) to your source directory.
+
+Usage example (see api_example.py):
+
+```
+import numpy as np
+import rpdivknng
+
+# Class implementing distance measure needs to have following properties:
+# - attribute 'size' that reflects the number of data objects
+# - function distance(a,b) where parameters a,b are integers between 0..(size-1)
+# Name of class is arbitrary
+class DistanceMeasureL2:
+	def __init__(self,x):
+		self.tmp = 1
+		self.x = x
+		self.size = len(x)
+	def distance(self,a,b):
+		dist = np.linalg.norm(self.x[a]-self.x[b])
+		return dist
+
+x=np.loadtxt('data/s2.txt')
+dist = DistanceMeasureL2(x)
+
+# Fast version using built in distance functions written in C:
+neighbors=1
+knn = rpdivknng.get_knng(x,neighbors,distance="l2")
+# distance must be one of {l2(default),l1,cos}
+
+# Slower version using distance function provided by python:
+# (Can work with any kind of distance)
+# knn = rpdivknng.get_knng_generic(dist,neighbors)
+
+# For higher quality:
+#  - decrease delta (within [0.0..1.0]) 
+#  - increase window (minimum 20)
+#  - set nndes around 0.2 (higer than delta)
+
+# For example:
+# knn = rpdivknng.get_knng(x,neighbors,window=50,nndes=0.2,maxiter=100,delta=0.001)
+
+#Output format:
+# knn[i][t][j]
+# for t=0: index of j'th neighbor for i'th point
+# for t=1: Distance to j'th neighbor for i'th point
+```
+
+
+# Command line interface
+## Compile
 
 make rknng
 
-(Tested in Ubuntu Linux 18.04)
+(Tested in Ubuntu Linux 18.04, 22.04)
 
-
-# Command line options
+## Command line options
 
 ```
 rknng [--help] [--delta=<STOP>] [--distpar=<FLOAT>] [-k <n>] [--seed=<n>] [--type=<vec|txt>] [--dfunc=<FUNC>] [--format=<ascii|lshkit>] [--outf=<format>] [--algo=<name>] [-o <file>] [--gt=<file>] <file>
@@ -37,9 +97,9 @@ rknng [--help] [--delta=<STOP>] [--distpar=<FLOAT>] [-k <n>] [--seed=<n>] [--typ
   <file>                    input files
 ``` 
 
-# Input Data formats
+## Input Data formats
 
-# lshkit (input data, numerical):
+## lshkit (input data, numerical):
 
 From http://lshkit.sourceforge.net/dc/d46/matrix_8h.html :
 "In the beginning of the file are three 32-bit unsigned integers: ELEM-SIZE, SIZE, DIM. ELEM-SIZE is the size of the element, and currently the only valid value is 4, which is the size of float. SIZE is the number of vectors in the file and DIM is the dimension. The rest of the file is SIZE vectors stored consecutively, and the total size is SIZE * DIM * 4 bytes."
@@ -51,9 +111,9 @@ Example:
 2.4396723e-02   3.8201822e-01   2.8091144e-01   8.7233654e-02   1.6419012e-01
 
 
-# Output Data formats
+## Output Data formats
 
-## txt (graph format):
+### txt (graph format):
 Header (first line): number of nodes.  
 Other lines: One line for each item in dataset. Line format:  
  - First number: id of node (in range 0..(N-1))
@@ -67,11 +127,11 @@ Example:
 ...  
 N=5000. First node id = 0, K = 5, neighbors = [24 99 483 11 444], distances = [1414008.500000 1238420.750000 .... ]   
 
-## wgraph (graph format for text data only):
+### wgraph (graph format for text data only):
 Each string and its neighbours in one line. Distance in brackets. Example:  
 neighbor: neighboor(1.0000), neighbour(1.0000), neibor(2.0000), neigbour(2.0000), neighbours(2.0000), neibour(3.0000), neither(3.0000)
 
-# Run examples:
+## Run examples:
 
 ./rknng  --help
 
@@ -96,3 +156,6 @@ Run RPDIV algorithm for vectorial data/g2-256-50.txt (N=2048,D=256) dataset:
  
  [2] W. Dong, C. Moses, and K. Li. Efficient k-nearest neighbor graph construction for generic similarity measures. In Proceedings of the 20th international conference on World wide web, page 577–586. ACM, 2011.
 
+
+# Contact
+sami.sieranoja@gmail.com

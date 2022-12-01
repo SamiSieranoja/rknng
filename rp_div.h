@@ -102,7 +102,7 @@ kNNGraph* rpdiv_create_knng(DataSet* data, DataSet* DS_proj, int K, int window_w
     int * ind_arr = (int*) safemalloc(sizeof(int)*data->size);
     int * ind_arr2 = (int*) safemalloc(sizeof(int)*data->size);
 
-    printf("K=%d W=%d delta=%f nndes_start=%f data type %d, distance type:%d\n",K,window_width,delta,nndesStart, data->type,g_options.distance_type);
+    printf("K=%d W=%d delta=%f nndes_start=%f data type %d, distance type:%d\n",K,window_width,delta,nndesStart, data->type,data->distance_type);
 
     knng->k=K; //TODO
 

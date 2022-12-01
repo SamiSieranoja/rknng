@@ -8,6 +8,8 @@
 #include <float.h>
 #include "util.h"
 
+#include "constants.h"
+
 #include "options.h"
 extern struct knng_options g_options;
 
@@ -26,15 +28,12 @@ struct DataSet {
   int **bigrams;
   int **trigrams;
   int type;
+  int distance_type;
 #ifdef Py_PYTHON_H
   PyObject *pyobj;
   PyObject *pydf; // Distance function defined in python
 #endif
 };
-
-#define T_NUMERICAL 1
-#define T_STRING 2
-#define T_CUSTOMDF 3
 
 #include "stringdata.h"
 
@@ -193,18 +192,19 @@ inline float distance(DataSet *P, int p1, int p2) {
     float *p1_idx = get_vector(P, p1);
     float *p2_idx = get_vector(P, p2);
 
-    switch (g_options.distance_type) {
-    case 0:
+    switch (P->distance_type) {
+    case D_L2:
       ret = L2dist(p1_idx, p2_idx, P->dimensionality);
       break;
-    case 1:
+    case D_L1:
       ret = minkowskiDist(p1_idx, p2_idx, P->dimensionality, g_options.minkowski_p);
       break;
-    case 2:
+    case D_COS:
       ret = cosine_dist(p1_idx, p2_idx, P->dimensionality);
       break;
 
     default:
+      printf("No such distance function:%d\n",P->distance_type);
       exit(1); // TODO
     }
 

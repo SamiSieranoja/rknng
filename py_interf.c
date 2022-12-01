@@ -6,24 +6,24 @@
 #include "rknng_lib.h"
 #include <stdio.h>
 
+#include "constants.h"
+
 static PyObject *rpdiv_knng(PyObject *self, PyObject *args, PyObject *kwargs);
 
 static PyObject *rpdiv_knng_generic(PyObject *self, PyObject *args, PyObject *kwargs);
-
 
 // Define python accessible methods
 static PyMethodDef RpdivknngMethods[] = {
     // {"logit", rpdivknng_logit, METH_VARARGS, "compute logit"},
     {"get_knng", rpdiv_knng, METH_VARARGS | METH_KEYWORDS, "Create kNN graph"},
-    {"get_knng_generic", rpdiv_knng_generic, METH_VARARGS | METH_KEYWORDS, "Create kNN graph using python provided distance function"},
+    {"get_knng_generic", rpdiv_knng_generic, METH_VARARGS | METH_KEYWORDS,
+     "Create kNN graph using python provided distance function"},
     {NULL, NULL, 0, NULL}};
-
 
 #define v(x0, x1)                                                                                  \
   (*(npy_float64 *)((PyArray_DATA(py_v) + (x0)*PyArray_STRIDES(py_v)[0] +                          \
                      (x1)*PyArray_STRIDES(py_v)[1])))
 #define v_shape(i) (py_v->dimensions[(i)])
-
 
 // For generic distance functions implemented in python
 static PyObject *rpdiv_knng_generic(PyObject *self, PyObject *args, PyObject *kwargs) {
@@ -33,14 +33,13 @@ static PyObject *rpdiv_knng_generic(PyObject *self, PyObject *args, PyObject *kw
   int k, w = 0, maxiter = 100;
   float nndes = 0.0, delta = 0.05;
   char *type = NULL;
-  char *distance = NULL;
+  // char *distance = NULL;
 
   PyObject *ret;
-  static char *kwlist[] = {"v",     "k",     "window",   "nndes", "maxiter",
-                           "delta", "dtype", "distance", NULL};
+  static char *kwlist[] = {"v", "k", "window", "nndes", "maxiter", "delta", "dtype", NULL};
 
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "Oi|ififss", kwlist, &py_v, &k, &w, &nndes,
-                                   &maxiter, &delta, &type, &distance)) {
+                                   &maxiter, &delta, &type)) {
 
     return NULL;
   }
@@ -50,8 +49,8 @@ static PyObject *rpdiv_knng_generic(PyObject *self, PyObject *args, PyObject *kw
   if (w <= 20) {
     w = 20;
   }
- 
-  printf("DELTA=%f\n",delta);
+
+  printf("DELTA=%f\n", delta);
 
   ret = __rpdiv_knng_generic(py_v, k, w, nndes, delta, maxiter);
   return ret;
@@ -81,12 +80,15 @@ static PyObject *rpdiv_knng(PyObject *self, PyObject *args, PyObject *kwargs) {
   if (w <= 20) {
     w = 20;
   }
- 
 
+  int dtype = D_L2;
   if (distance != NULL) {
     if (strcmp("l2", distance) == 0) {
-    } else if (strcmp("mnkw", distance) == 0) {
+      dtype = D_L2;
+    } else if (strcmp("l1", distance) == 0) {
+      dtype = D_L1;
     } else if (strcmp("cos", distance) == 0) {
+      dtype = D_COS;
     } else {
       PyErr_SetString(PyExc_ValueError, "Distance must be one for {l2(default),l1,cos}");
       return NULL;
@@ -94,10 +96,10 @@ static PyObject *rpdiv_knng(PyObject *self, PyObject *args, PyObject *kwargs) {
   }
 
   // if (type != NULL && distance != NULL) {
-    // printf(":%s %s\n", type, distance);
+  // printf(":%s %s\n", type, distance);
   // }
 
-  ret = __rpdiv_knng(py_v, k, w, nndes, delta, maxiter);
+  ret = __rpdiv_knng(py_v, k, w, nndes, delta, maxiter, dtype);
   return ret;
 }
 
