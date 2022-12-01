@@ -15,19 +15,45 @@ class DistanceMeasureL2:
 		self.x = x
 		self.size = len(x)
 	def distance(self,a,b):
-		dist = 3.3
 		dist = np.linalg.norm(self.x[a]-self.x[b])
 		return dist
 
-x=np.loadtxt('data/g2-256-50.txt')
+# x=np.loadtxt('data/g2-256-50.txt')
+x=np.loadtxt('data/s2.txt')
 dist = DistanceMeasureL2(x)
 # knn = rpdivknng.rpdiv_knng(x,20,window=30,nndes=0.2,maxiter=100,delta=0.02)
 
-knn = rpdivknng.rpdiv_knng_o(dist,20)
-# knn = rpdivknng.rpdiv_knng(x,20,window=30,nndes=0.2,maxiter=100,delta=0.02)
-# knn = rpdivknng.rpdiv_knng_o(dist,20,delta=0.02,nndes=0.0)
-# print(knn)
-print("KNN:")
-# print(knn[0])
-# print(knn[1])
+
+# Fast version using built in distance functions written in C:
+knn = rpdivknng.get_knng(x,3)
+
+# Slower version using distance function provided by python:
+# (Can work with any kind of distance)
+# knn = rpdivknng.get_knng_generic(dist,3)
+
+# For higher quality:
+#  - decrease delta (within [0.0..1.0]) 
+#  - increase window (minimum 20)
+#  - set nndes around 0.2 (higer than delta)
+
+# For example:
+# knn = rpdivknng.get_knng(x,3,window=50,nndes=0.2,maxiter=100,delta=0.001)
+
+#Output format:
+# knn[i][t][j]
+# for t=0: index of j'th neighbor for i'th point
+# for t=1: Distance to j'th neighbor for i'th point
+
+# Draw knn graph:
+from matplotlib import pyplot as plt
+for y in x:
+	plt.plot(y[0],y[1], marker=".", color="black")
+
+for i in range(0,len(knn)):
+	selfcoord = [x[i][0],x[i][1]]
+	for j in range(0,len(knn[i][0])):
+		neighbor = knn[i][0][j]
+		ncoord = [x[neighbor][0],x[neighbor][1]]
+		plt.plot([selfcoord[0],ncoord[0]],[selfcoord[1],ncoord[1]],color="black")
+plt.show()
 

@@ -36,8 +36,6 @@
                      (x1)*PyArray_STRIDES(py_F)[1])))
 #define F_shape(i) (py_F->dimensions[(i)])
 
-//#include "contrib/argtable3.h"
-
 #include "timer.h"
 #include "util.h"
 #include "globals.h"
@@ -53,7 +51,6 @@ kNNGraph *g_ground_truth;
 
 extern "C" {
 void test_rknn_lib() {
-  printf("333333\n");
   DataSet *DS = loadStringData("data/birkbeckU.txt");
   debugStringDataset(DS);
 }
@@ -91,21 +88,17 @@ PyObject *knng2py(kNNGraph *knng) {
   return pyknng;
 }
 
-PyObject *__rpdiv_knng_o(PyObject *py_v, int k, int w, float nndes, float delta, int maxiter) {
 
-  printf("Delta0=%f\n", delta);
-  printf("__rpdiv_knng_o\n", k,  w,  nndes,  delta,  maxiter);
+// For generic distance function defined in python
+PyObject *__rpdiv_knng_generic(PyObject *py_v, int k, int w, float nndes, float delta, int maxiter) {
+
   PyObject *pysize = PyObject_GetAttrString(py_v, "size");
   DataSet *DS = (DataSet *)safemalloc(sizeof(DataSet));
   DS->size = PyLong_AsLong(pysize);
   DS->dimensionality = 0;
   DS->type = T_CUSTOMDF; 
-  
   DS->pydf = PyObject_GetAttrString(py_v, "distance");
 
-
-  printf("Delta=%f\n", delta);
-  printf("!! k=%d,w=%d,delta=%f,nndes=%f,maxiter=%d\n", k,  w, delta, nndes,  maxiter);
   kNNGraph *knng = rpdiv_create_knng(DS, DS, k, w, delta, nndes, maxiter);
 
   PyObject *pyknng = knng2py(knng);
@@ -113,6 +106,7 @@ PyObject *__rpdiv_knng_o(PyObject *py_v, int k, int w, float nndes, float delta,
 }
 
 
+// For vector data
 PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float delta, int maxiter) {
   int N = py_v->dimensions[0];
   int D = py_v->dimensions[1];
@@ -126,10 +120,7 @@ PyObject *__rpdiv_knng(PyArrayObject *py_v, int k, int w, float nndes, float del
     }
   }
 
-  // printf("k=%d,w=%d,delta=%f,nndes=%f,maxiter=%d\n", k,  w,  nndes,  delta,  maxiter);
-  // printf("k=%d,w=%d,delta=%f,nndes=%f,maxiter=%d\n", k,  w,  nndes,  delta,  maxiter);
   kNNGraph *knng = rpdiv_create_knng(DS, DS, k, w, delta, nndes, maxiter);
-
   PyObject *pyknng = knng2py(knng);
 
   return pyknng;
@@ -159,7 +150,6 @@ kNNGraph *get_knng(const char *infn, int k, int data_type, int algo, float endco
 
   // debugVecGraph(DS,knng,0);
   // debugStringGraph(DS,knng,0);
-  // knng->list[10].items[0].id = 23;
   knng->DS = (void *)DS;
 
   printf("time=%fs\n", g_timer.get_time());
